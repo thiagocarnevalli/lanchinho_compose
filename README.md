@@ -7,7 +7,7 @@ Esse projeto é um esboço de uma idéia que buscar tornar esse processo transpa
 O principal objetivo é criar uma aplicação que dê a praticidade de um delivery com a experiência dos ambientes presenciais.
 
 
-##Momento Atual do Projeto
+## Momento Atual do Projeto <br/>
 Esse projeto acabou de ser iniciado, no momento ele faz o consumo de uma API gratuita simples, apenas para apresentar variedades de pratos e uma lista de pedido dinâmica, sem persistência local <br/>
 Sua estrutura está em uma módulo único separado em pacotes.  <br/>
 <b> Informações sobre os pacotes: </b>
@@ -19,7 +19,7 @@ Temos entidades intermediárias que traduzem as entidades da camada de dados em 
 UI - Este pacote é destinado à fragments, activities, e composable functions.<br/>
 
 
-##Próximos passos? <br/>
+## Próximos passos? <br/>
 - Criação de testes instrumentais com a utilização do expresso;<br/>
 - Criação de API própria para o consumo de informações;<br/>
 - Criação de testes unitários para a camada de domain, realizando o mock das chamadas de API;<br/>
@@ -30,8 +30,8 @@ UI - Este pacote é destinado à fragments, activities, e composable functions.<
 - Crashlytics;<br/>
 
 
-#Pontos de atenção:<br/>
-A lib do jetpack compose ainda é extremamente recente, o que causa diversas dificuldades tecnológicas, principalmente ao suporte de libs, animação, navegação e o uso de algumas bibliotecas experimentais.
+<b> Pontos de atenção: <b/>
+A lib do jetpack compose ainda é extremamente recente, o que causa diversas dificuldades tecnológicas, principalmente ao suporte de libs, animação, navegação e força o uso de algumas bibliotecas experimentais e annotations adicionais.
 
 
 ## Informações Tecnológicas

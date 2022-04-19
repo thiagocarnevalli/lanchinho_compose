@@ -4,7 +4,7 @@ Hoje a maioria dos restaurantes tem um sistema manual de organização em seus a
 ter informação do andamento, realizar o pagamento, solicitar mudanças nos pratos e etc.
 Esse projeto é um esboço de uma idéia que buscar tornar esse processo transparente, automático e de baixo custo.
 
-O principal objetivo é criar uma aplicação que dê a praticidade de um delivery com a experiência dos ambientes temáticos de um processo presencial.
+O principal objetivo é criar uma aplicação que dê a praticidade de um delivery com a experiência dos ambientes presenciais.
 
 ## Informações Tecnológicas
 Language: Kotlin <br/>

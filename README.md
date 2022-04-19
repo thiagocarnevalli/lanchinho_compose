@@ -10,7 +10,7 @@ O principal objetivo é criar uma aplicação que dê a praticidade de um delive
 ## Momento Atual do Projeto <br/>
 Esse projeto acabou de ser iniciado, no momento ele faz o consumo de uma API gratuita simples, apenas para apresentar variedades de pratos e uma lista de pedido dinâmica, sem persistência local <br/>
 Sua estrutura está em uma módulo único separado em pacotes.  <br/>
-<b> Informações sobre os pacotes: </b>
+<b> Informações sobre os pacotes: </b> <br/>
 Data: Local destinado a todos as entidades de acesso ao serviço remoto, assim como as apis, interfaces e implementações de serviço. O acesso a essa camada é feito exclusivamente através do repositório.<br/>
 
 Domain - Local destinado à camada lógica da aplicação. 

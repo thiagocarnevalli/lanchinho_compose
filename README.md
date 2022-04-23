@@ -20,7 +20,7 @@ UI - Este pacote é destinado à fragments, activities, e composable functions.<
 
 
 ## Próximos passos? <br/>
-- Criação de testes instrumentais com a utilização do expresso;<br/>
+- Criação de testes instrumentais com a utilização do espresso;<br/>
 - Criação de API própria para o consumo de informações;<br/>
 - Criação de testes unitários para a camada de domain, realizando o mock das chamadas de API;<br/>
 - Implementação da lógica de pedidos;<br/>

@@ -11,7 +11,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class MainViewModel( private val foodsUseCase: GetFoodsUseCase) : ViewModel(), KoinComponent {
-    //private val foodsUseCase: GetFoodsUseCase by inject()
     private val orders: MutableList<FoodUI> = mutableListOf()
     private val _state: MutableStateFlow<UIState> = MutableStateFlow(UIState.Initial)
     private val _action: MutableStateFlow<UIEvent> = MutableStateFlow(UIEvent.Initial)

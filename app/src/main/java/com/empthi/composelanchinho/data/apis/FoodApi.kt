@@ -5,7 +5,7 @@ import com.empthi.composelanchinho.data.interfaces.IFoodApi
 import com.empthi.composelanchinho.data.services.FoodService
 
 
-class FoodApi(val base: BaseApi) : IFoodApi {
+class FoodApi(private val base: BaseApi) : IFoodApi {
     private val service by lazy { base.retrofit.create(FoodService::class.java) }
 
     override suspend fun searchByName(term: String): List<Food>? {

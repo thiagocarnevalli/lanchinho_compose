@@ -4,13 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.empthi.composelanchinho.domain.entities.FoodUI
 import com.empthi.composelanchinho.domain.usecases.GetFoodsUseCase
+import com.empthi.composelanchinho.ui.MenuListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class MainViewModel( private val foodsUseCase: GetFoodsUseCase) : ViewModel(), KoinComponent {
+class MenuViewModel(private val foodsUseCase: GetFoodsUseCase) : ViewModel(), MenuListener,
+    KoinComponent {
     private val orders: MutableList<FoodUI> = mutableListOf()
     private val _state: MutableStateFlow<UIState> = MutableStateFlow(UIState.Initial)
     private val _action: MutableStateFlow<UIEvent> = MutableStateFlow(UIEvent.Initial)
@@ -35,10 +38,22 @@ class MainViewModel( private val foodsUseCase: GetFoodsUseCase) : ViewModel(), K
         }
     }
 
-    fun addOrder(order: FoodUI) {
-        orders.add(order)
-        _state.value = UIState.WaitOrders(orders)
+    private fun addOrder(order: FoodUI) {
+        viewModelScope.launch {
+            orders.add(order)
+            _state.value = UIState.WaitOrders(orders.map { it })
+        }
     }
+
+    override fun onLoadMenu() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAddOrder(order: FoodUI) {
+        addOrder(order)
+    }
+
+
 }
 
 sealed class UIEvent {

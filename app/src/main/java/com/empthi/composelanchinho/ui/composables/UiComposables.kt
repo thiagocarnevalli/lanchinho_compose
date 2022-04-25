@@ -50,7 +50,7 @@ fun OrdersTracker(
     modifier: Modifier = Modifier,
     clientOrders: List<FoodUI>,
     showOrders: Boolean = false,
-    onShowOrderClick: (showing: Boolean) -> Unit
+    onShowOrderClick: () -> Unit
 ) {
     Box(modifier = modifier) {
         Surface(
@@ -65,7 +65,7 @@ fun OrdersTracker(
         ) {
             Column {
                 IconButton(onClick = {
-                    onShowOrderClick(!showOrders)
+                    onShowOrderClick()
                 }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),

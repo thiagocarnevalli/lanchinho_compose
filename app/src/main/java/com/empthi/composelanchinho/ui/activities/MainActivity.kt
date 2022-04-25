@@ -1,27 +1,30 @@
 package com.empthi.composelanchinho.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.*
 import com.empthi.composelanchinho.domain.entities.FoodUI
-import com.empthi.composelanchinho.domain.stateholders.MainViewModel
+import com.empthi.composelanchinho.domain.stateholders.MenuViewModel
 import com.empthi.composelanchinho.domain.stateholders.UIEvent
 import com.empthi.composelanchinho.domain.stateholders.UIState
+import com.empthi.composelanchinho.ui.MenuListener
 import com.empthi.composelanchinho.ui.composables.FoodCardsGrid
 import com.empthi.composelanchinho.ui.composables.OrdersTracker
 import com.empthi.composelanchinho.ui.theme.ComposeLanchinhoTheme
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : ComponentActivity() {
-    val mainViewModel  by viewModel<MainViewModel>()
+    private val menuViewModel by viewModel<MenuViewModel>()
     private val letters =
         mutableListOf("b", "c", "a", "s") //To open a difference search, just for fun :)
 
@@ -30,43 +33,51 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ComposeLanchinhoTheme {
-                MainActivityScreen(mainViewModel, letters.random())
+                MainActivityScreen(
+                    menuViewModel,
+                    menuViewModel.state
+                )
+            }
+        }
+        setupEventsObserver()
+    }
+
+    private fun setupEventsObserver() {
+        lifecycleScope.launchWhenStarted {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                menuViewModel.action.collect {
+                    when (it) {
+                        is UIEvent.Initial -> {
+                            menuViewModel.loadMenu(letters.random())
+                        }
+                        else -> {}
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun MainActivityScreen(mainViewModel: MainViewModel, randomLetter: String) {
+private fun MainActivityScreen(
+    listener: MenuListener,
+    currentState: StateFlow<UIState>
+) {
     //States
-    val uiState by remember { mutableStateOf(mainViewModel.state) }
-    val uiEvent by remember { mutableStateOf(mainViewModel.action) }
-    var isShowingOrders by remember { mutableStateOf(false) }
+    val state by remember { mutableStateOf(currentState) }
+    var isShowingOrders by remember { mutableStateOf(true) }
     var clientOrders by remember { mutableStateOf(listOf<FoodUI>()) }
     var menu by remember { mutableStateOf(listOf<FoodUI>()) }
 
-    val gridSize = if (isShowingOrders) 0.7f else 1f
+    val gridSize = if (isShowingOrders && clientOrders.isNotEmpty()) 0.7f else 1f
 
-    uiEvent.collectAsState().let { action ->
-        when (action.value) {
-            is UIEvent.Initial -> {
-                mainViewModel.loadMenu(randomLetter)
-            }
-            is UIEvent.AddOrder -> {
-                val order = (action.value as UIEvent.AddOrder).order
-                mainViewModel.addOrder(order)
-            }
-        }
-    }
-
-    uiState.collectAsState().let { state ->
-        when (state.value) {
+    state.collectAsState().value.let {
+        when (it) {
             is UIState.MenuLoaded -> {
-                menu = (state.value as UIState.MenuLoaded).data
+                menu = it.data
             }
             is UIState.WaitOrders -> {
-                clientOrders = (state.value as UIState.WaitOrders).items
-                isShowingOrders = true
+                clientOrders = it.items
             }
             else -> {}
         }
@@ -83,7 +94,7 @@ private fun MainActivityScreen(mainViewModel: MainViewModel, randomLetter: Strin
                 .fillMaxHeight(gridSize)
         ) {
             FoodCardsGrid(list = menu) { order ->
-                mainViewModel.addOrder(order = order)
+                listener.onAddOrder(order)
             }
         }
         Spacer(modifier = Modifier.size(8.dp))
@@ -93,7 +104,7 @@ private fun MainActivityScreen(mainViewModel: MainViewModel, randomLetter: Strin
                 showOrders = isShowingOrders,
                 clientOrders = clientOrders
             ) {
-                isShowingOrders = it
+                isShowingOrders = !isShowingOrders
             }
         }
     }

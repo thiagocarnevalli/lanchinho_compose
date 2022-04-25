@@ -1,7 +1,6 @@
 package com.empthi.composelanchinho.ui.activities
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -12,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.*
 import com.empthi.composelanchinho.domain.entities.FoodUI
+import com.empthi.composelanchinho.domain.entities.Order
 import com.empthi.composelanchinho.domain.stateholders.MenuViewModel
 import com.empthi.composelanchinho.domain.stateholders.UIEvent
 import com.empthi.composelanchinho.domain.stateholders.UIState
@@ -34,8 +34,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeLanchinhoTheme {
                 MainActivityScreen(
-                    menuViewModel,
-                    menuViewModel.state
+                    listener = menuViewModel,
+                    currentState = menuViewModel.state
                 )
             }
         }
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                 menuViewModel.action.collect {
                     when (it) {
                         is UIEvent.Initial -> {
-                            menuViewModel.loadMenu(letters.random())
+                            menuViewModel.onInit(letters.random())
                         }
                         else -> {}
                     }
@@ -66,7 +66,7 @@ private fun MainActivityScreen(
     //States
     val state by remember { mutableStateOf(currentState) }
     var isShowingOrders by remember { mutableStateOf(true) }
-    var clientOrders by remember { mutableStateOf(listOf<FoodUI>()) }
+    var clientOrders by remember { mutableStateOf(listOf<Order>()) }
     var menu by remember { mutableStateOf(listOf<FoodUI>()) }
 
     val gridSize = if (isShowingOrders && clientOrders.isNotEmpty()) 0.7f else 1f

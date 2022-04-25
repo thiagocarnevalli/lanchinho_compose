@@ -5,3 +5,8 @@ data class FoodUI(
     val name: String,
     var uri: String
 )
+
+data class Order(
+    val food: FoodUI,
+    val waitingTime: Float
+)

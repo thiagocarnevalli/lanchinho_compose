@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.empthi.composelanchinho.R
 import com.empthi.composelanchinho.domain.entities.FoodUI
+import com.empthi.composelanchinho.domain.entities.Order
 
 @Composable
 fun FoodCardsGrid(list: List<FoodUI>, onItemSelected: (item: FoodUI) -> Unit) {
@@ -48,7 +49,7 @@ fun FoodCardsGrid(list: List<FoodUI>, onItemSelected: (item: FoodUI) -> Unit) {
 @Composable
 fun OrdersTracker(
     modifier: Modifier = Modifier,
-    clientOrders: List<FoodUI>,
+    clientOrders: List<Order>,
     showOrders: Boolean = false,
     onShowOrderClick: () -> Unit
 ) {
@@ -93,7 +94,7 @@ fun OrdersTracker(
 }
 
 @Composable
-fun OrdersList(orders: List<FoodUI>, modifier: Modifier = Modifier) {
+fun OrdersList(orders: List<Order>, modifier: Modifier = Modifier) {
     LazyRow {
         items(orders) { order ->
             Surface(
@@ -102,11 +103,15 @@ fun OrdersList(orders: List<FoodUI>, modifier: Modifier = Modifier) {
                     .sizeIn(maxWidth = 180.dp)
             ) {
                 Column {
-                    FoodCard(name = order.name, imageUrl = order.uri, onItemSelected = { })
+                    FoodCard(
+                        name = order.food.name,
+                        imageUrl = order.food.uri,
+                        onItemSelected = { })
                     LinearProgressIndicator(
                         modifier = modifier
                             .fillMaxWidth(0.8f)
-                            .align(Alignment.CenterHorizontally)
+                            .align(Alignment.CenterHorizontally),
+                        progress = order.waitingTime
                     )
 
                 }

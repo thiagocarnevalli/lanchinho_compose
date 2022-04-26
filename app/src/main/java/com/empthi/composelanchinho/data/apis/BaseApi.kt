@@ -39,7 +39,7 @@ internal class NullOnEmptyConverterFactory : Converter.Factory() {
         val delegate: Converter<ResponseBody, Any> =
             retrofit.nextResponseBodyConverter(this, type, annotations)
         return Converter { body ->
-            //Only because the themealdb api returns a blank body  on error and the retrofit throws a exception in this scenario.
+            //Only because the themealdb api returns a blank body  on error and the gson converter throws a exception in this scenario.
             try {
                 delegate.convert(body)
             } catch (e: Exception) {

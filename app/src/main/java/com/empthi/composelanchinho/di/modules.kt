@@ -20,9 +20,6 @@ val networkModule = module {
     factory { provideBaseApiWithoutOkHttp() }
 }
 
-
-
-
 fun provideFoodApi(baseApi: BaseApi): FoodApi {
     return FoodApi(baseApi)
 }

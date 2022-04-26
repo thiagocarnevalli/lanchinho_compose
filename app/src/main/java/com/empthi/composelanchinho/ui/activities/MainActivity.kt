@@ -1,99 +1,135 @@
 package com.empthi.composelanchinho.ui.activities
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.*
+import com.empthi.composelanchinho.R
 import com.empthi.composelanchinho.domain.entities.FoodUI
-import com.empthi.composelanchinho.domain.stateholders.MainViewModel
-import com.empthi.composelanchinho.domain.stateholders.UIEvent
-import com.empthi.composelanchinho.domain.stateholders.UIState
+import com.empthi.composelanchinho.domain.entities.Order
+import com.empthi.composelanchinho.domain.stateholders.MenuViewModel
+import com.empthi.composelanchinho.domain.interfaces.MenuAction
+import com.empthi.composelanchinho.domain.interfaces.MenuState
+import com.empthi.composelanchinho.domain.interfaces.MenuViewListener
+import com.empthi.composelanchinho.ui.composables.ErrorComponent
 import com.empthi.composelanchinho.ui.composables.FoodCardsGrid
 import com.empthi.composelanchinho.ui.composables.OrdersTracker
 import com.empthi.composelanchinho.ui.theme.ComposeLanchinhoTheme
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class MainActivity : ComponentActivity() {
-    val mainViewModel  by viewModel<MainViewModel>()
-    private val letters =
-        mutableListOf("b", "c", "a", "s") //To open a difference search, just for fun :)
+class MainActivity : ComponentActivity(), MenuViewListener {
+    private val menuViewModel by viewModel<MenuViewModel>()
+    private val letters = mutableListOf("b", "c", "a", "s") //To open a difference search, just for fun :)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             ComposeLanchinhoTheme {
-                MainActivityScreen(mainViewModel, letters.random())
+                MainActivityScreen(
+                    listener = this,
+                    refState = menuViewModel.state
+                )
+            }
+        }
+        setupEventsObserver()
+    }
+
+    private fun setupEventsObserver() {
+        lifecycleScope.launchWhenStarted {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                menuViewModel.action.collect {
+                    when (it) {
+                        is MenuAction.Action.Initialize -> {
+                            menuViewModel.onInit(letters.random())
+                        }
+                        is MenuAction.Action.LoadMenuAction -> {
+                            menuViewModel.onLoadMenu(it.term)
+                        }
+                        is MenuAction.Action.AddOrderAction -> {
+                            menuViewModel.onAddOrder(order = it.order)
+                        }
+                    }
+                }
             }
         }
     }
+
+    override fun onOrderSelected(order: FoodUI) {
+        menuViewModel.onOrderSelected(order = order)
+    }
+
+
 }
 
 @Composable
-private fun MainActivityScreen(mainViewModel: MainViewModel, randomLetter: String) {
+private fun MainActivityScreen(
+    listener: MenuViewListener,
+    refState: StateFlow<MenuState.State>,
+    modifier: Modifier = Modifier
+) {
     //States
-    val uiState by remember { mutableStateOf(mainViewModel.state) }
-    val uiEvent by remember { mutableStateOf(mainViewModel.action) }
-    var isShowingOrders by remember { mutableStateOf(false) }
-    var clientOrders by remember { mutableStateOf(listOf<FoodUI>()) }
+    val state by remember { mutableStateOf(refState) }
+    var isShowingOrders by remember { mutableStateOf(true) }
+    var clientOrders by remember { mutableStateOf(listOf<Order>()) }
     var menu by remember { mutableStateOf(listOf<FoodUI>()) }
 
-    val gridSize = if (isShowingOrders) 0.7f else 1f
+    val gridSize = if (isShowingOrders && clientOrders.isNotEmpty()) 0.7f else 1f
 
-    uiEvent.collectAsState().let { action ->
-        when (action.value) {
-            is UIEvent.Initial -> {
-                mainViewModel.loadMenu(randomLetter)
+    state.collectAsState().value.let {
+        when (it) {
+            is MenuState.State.MenuLoaded -> {
+                menu = it.items
             }
-            is UIEvent.AddOrder -> {
-                val order = (action.value as UIEvent.AddOrder).order
-                mainViewModel.addOrder(order)
+            is MenuState.State.WaitOrders -> {
+                clientOrders = it.items
             }
-        }
-    }
-
-    uiState.collectAsState().let { state ->
-        when (state.value) {
-            is UIState.MenuLoaded -> {
-                menu = (state.value as UIState.MenuLoaded).data
-            }
-            is UIState.WaitOrders -> {
-                clientOrders = (state.value as UIState.WaitOrders).items
-                isShowingOrders = true
+            is MenuState.State.Error -> {
+                it.error?.let { exception ->
+                    ErrorComponent(
+                        message =
+                        exception.message ?: stringResource(id = R.string.generic_error_message)
+                    ) {
+                        exception.retry.invoke()
+                    }
+                }
             }
             else -> {}
         }
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(4.dp)
     ) {
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .align(Alignment.TopCenter)
                 .fillMaxHeight(gridSize)
         ) {
             FoodCardsGrid(list = menu) { order ->
-                mainViewModel.addOrder(order = order)
+                listener.onOrderSelected(order)
             }
         }
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = modifier.size(8.dp))
         if (clientOrders.isNotEmpty()) {
             OrdersTracker(
-                modifier = Modifier.align(Alignment.BottomStart),
+                modifier = modifier.align(Alignment.BottomStart),
                 showOrders = isShowingOrders,
                 clientOrders = clientOrders
             ) {
-                isShowingOrders = it
+                isShowingOrders = !isShowingOrders
             }
         }
     }

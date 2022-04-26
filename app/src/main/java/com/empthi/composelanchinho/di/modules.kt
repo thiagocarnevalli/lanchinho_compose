@@ -3,14 +3,14 @@ package com.empthi.composelanchinho.di
 import com.empthi.composelanchinho.data.Repository
 import com.empthi.composelanchinho.data.apis.BaseApi
 import com.empthi.composelanchinho.data.apis.FoodApi
-import com.empthi.composelanchinho.domain.stateholders.MainViewModel
+import com.empthi.composelanchinho.domain.stateholders.MenuViewModel
 import com.empthi.composelanchinho.domain.usecases.GetFoodsUseCase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 
 val appModules = module {
-    viewModel { MainViewModel(get()) }
+    viewModel { MenuViewModel(get()) }
 }
 
 val networkModule = module {

@@ -3,4 +3,11 @@
     <string name="my_orders">Pedidos Feitos</string>
     <string name="collapse_menu">Minimizar menu</string>
     <string name="expand_menu">Expandir menu</string>
+
+
+    <!--Error -->
+    <string name="try_again_message">Tentar novamente</string>
+    <string name="error_image_description">Icone erro</string>
+    <string name="generic_error_message">Ops! Algo deu errado!</string>
+
 </resources>

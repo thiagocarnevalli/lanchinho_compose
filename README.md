@@ -39,3 +39,7 @@ Language: Kotlin <br/>
 Architeture: MVVM <br/>
 DI: Koin <br/>
 Libs: Retrofit, Jetpack Compose, Coil, Gson <br/>
+
+
+## Icones
+- hungry.png is a work from <a href="https://www.flaticon.com/free-icons/hungry" title="hungry icons">Hungry icons created by Bakuh Huda - Flaticon</a>

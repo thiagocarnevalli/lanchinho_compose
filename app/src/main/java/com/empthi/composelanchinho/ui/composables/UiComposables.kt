@@ -19,8 +19,10 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.empthi.composelanchinho.R
 import com.empthi.composelanchinho.domain.entities.FoodUI
+import com.empthi.composelanchinho.domain.entities.Order
 
 @Composable
 fun FoodCardsGrid(list: List<FoodUI>, onItemSelected: (item: FoodUI) -> Unit) {
@@ -46,11 +49,39 @@ fun FoodCardsGrid(list: List<FoodUI>, onItemSelected: (item: FoodUI) -> Unit) {
 }
 
 @Composable
+fun ErrorComponent(message: String, retry: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.hungry),
+            contentDescription = stringResource(id = R.string.error_image_description),
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(text = message, fontSize = TextUnit(24f, TextUnitType.Sp))
+        Button(
+            onClick = { retry.invoke() },
+            modifier = Modifier
+                .padding(12.dp)
+                .padding(top = 8.dp)
+                .shadow(6.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.try_again_message),
+                fontSize = TextUnit(18f, TextUnitType.Sp)
+            )
+        }
+    }
+}
+
+@Composable
 fun OrdersTracker(
     modifier: Modifier = Modifier,
-    clientOrders: List<FoodUI>,
+    clientOrders: List<Order>,
     showOrders: Boolean = false,
-    onShowOrderClick: (showing: Boolean) -> Unit
+    onShowOrderClick: () -> Unit
 ) {
     Box(modifier = modifier) {
         Surface(
@@ -65,7 +96,7 @@ fun OrdersTracker(
         ) {
             Column {
                 IconButton(onClick = {
-                    onShowOrderClick(!showOrders)
+                    onShowOrderClick()
                 }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -93,7 +124,7 @@ fun OrdersTracker(
 }
 
 @Composable
-fun OrdersList(orders: List<FoodUI>, modifier: Modifier = Modifier) {
+fun OrdersList(orders: List<Order>, modifier: Modifier = Modifier) {
     LazyRow {
         items(orders) { order ->
             Surface(
@@ -102,11 +133,15 @@ fun OrdersList(orders: List<FoodUI>, modifier: Modifier = Modifier) {
                     .sizeIn(maxWidth = 180.dp)
             ) {
                 Column {
-                    FoodCard(name = order.name, imageUrl = order.uri, onItemSelected = { })
+                    FoodCard(
+                        name = order.food.name,
+                        imageUrl = order.food.uri,
+                        onItemSelected = { })
                     LinearProgressIndicator(
                         modifier = modifier
                             .fillMaxWidth(0.8f)
-                            .align(Alignment.CenterHorizontally)
+                            .align(Alignment.CenterHorizontally),
+                        progress = order.waitingTime
                     )
 
                 }
@@ -145,8 +180,7 @@ fun FoodCard(
                 fontSize = TextUnit(value = 18f, TextUnitType.Sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = FontFamily.Cursive,
-                fontWeight = FontWeight.Bold
+                fontFamily = FontFamily.Default
             )
             Spacer(modifier = Modifier.size(4.dp))
         }

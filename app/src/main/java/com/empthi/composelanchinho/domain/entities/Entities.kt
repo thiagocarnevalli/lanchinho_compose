@@ -5,3 +5,10 @@ data class FoodUI(
     val name: String,
     var uri: String
 )
+
+data class Order(
+    val food: FoodUI,
+    val waitingTime: Float
+)
+
+data class CustomException(override val message: String?, val retry: () -> Unit = {}) : Throwable()

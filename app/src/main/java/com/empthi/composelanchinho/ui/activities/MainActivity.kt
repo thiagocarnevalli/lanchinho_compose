@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -81,8 +82,8 @@ private fun MainActivityScreen(
     //States
     val state by remember { mutableStateOf(refState) }
     var isShowingOrders by remember { mutableStateOf(true) }
-    var clientOrders by remember { mutableStateOf(listOf<Order>()) }
-    var menu by remember { mutableStateOf(listOf<FoodUI>()) }
+    var clientOrders by rememberSaveable { mutableStateOf(listOf<Order>()) }
+    var menu by rememberSaveable { mutableStateOf(listOf<FoodUI>()) }
 
     val gridSize = if (isShowingOrders && clientOrders.isNotEmpty()) 0.7f else 1f
 

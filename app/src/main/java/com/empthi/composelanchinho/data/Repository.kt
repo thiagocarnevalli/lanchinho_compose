@@ -9,7 +9,7 @@ class Repository(
     private val foodApi: FoodApi
 ) : IFoodApi {
 
-    override suspend fun searchByName(term: String): List<Food>? {
+    override suspend fun searchByName(term: String): Result<List<Food>?> {
         return foodApi.searchByName(term = term)
     }
 }

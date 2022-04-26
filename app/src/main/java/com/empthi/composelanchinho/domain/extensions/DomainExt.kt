@@ -10,3 +10,4 @@ fun Food.toUi(): FoodUI {
         uri = this.imageUrl
     )
 }
+

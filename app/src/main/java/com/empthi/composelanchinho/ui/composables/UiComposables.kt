@@ -19,8 +19,10 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +44,34 @@ fun FoodCardsGrid(list: List<FoodUI>, onItemSelected: (item: FoodUI) -> Unit) {
             FoodCard(name = food.name, imageUrl = food.uri, onItemSelected = {
                 onItemSelected(food)
             })
+        }
+    }
+}
+
+@Composable
+fun ErrorComponent(message: String, retry: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.hungry),
+            contentDescription = stringResource(id = R.string.error_image_description),
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(text = message, fontSize = TextUnit(24f, TextUnitType.Sp))
+        Button(
+            onClick = { retry.invoke() },
+            modifier = Modifier
+                .padding(12.dp)
+                .padding(top = 8.dp)
+                .shadow(6.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.try_again_message),
+                fontSize = TextUnit(18f, TextUnitType.Sp)
+            )
         }
     }
 }
@@ -150,8 +180,7 @@ fun FoodCard(
                 fontSize = TextUnit(value = 18f, TextUnitType.Sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = FontFamily.Cursive,
-                fontWeight = FontWeight.Bold
+                fontFamily = FontFamily.Default
             )
             Spacer(modifier = Modifier.size(4.dp))
         }
